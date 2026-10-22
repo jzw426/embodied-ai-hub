@@ -397,6 +397,30 @@
     transform: translateX(4px);
   }
 
+  /* 视频讲解专区 */
+  .tl-video-start {
+    margin-top: 10px; padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .tl-video-title {
+    font-size: 13px; font-weight: 700; color: var(--orange);
+    margin-bottom: 2px;
+  }
+  .tl-video-link {
+    font-size: 13px; color: var(--text-muted);
+    padding: 6px 10px; border-radius: 6px;
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 2px solid var(--orange);
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .tl-video-link:hover {
+    color: var(--text);
+    background: rgba(245, 158, 11, 0.15);
+    transform: translateX(4px);
+  }
+
   /* 本周自测 */
   .tl-quiz {
     margin-top: 14px; padding: 12px 14px;
@@ -769,6 +793,10 @@
               <a class="tl-start-link" href="https://docs.python-requests.org/projects/cn/zh-cn/latest/" target="_blank">⭐ requests 中文文档（第5-6天）</a>
               <a class="tl-start-link" href="https://jsonplaceholder.typicode.com/" target="_blank">⭐ JSONPlaceholder 练手（第6-7天）</a>
             </div>
+            <div class="tl-video-start">
+              <div class="tl-video-title">📺 看不懂？看视频讲解：</div>
+              <a class="tl-video-link" href="https://www.bilibili.com/video/BV1Zk4y1M7kg/" target="_blank">▶ 7天光速学会 Python（含 requests 教程，第5-6集就是 API 调用）</a>
+            </div>
             <div class="tl-quiz">
               <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
               <div class="tl-quiz-q">1. 什么是 API？举一个生活中的例子</div>
@@ -796,9 +824,12 @@
             </div>
             <div class="tl-start">
               <div class="tl-start-title">📚 本周从这里开始（按难度从低到高）：</div>
-              <a class="tl-start-link" href="https://www.bilibili.com/video/BV1TAtwzTE1S/" target="_blank">⭐ 李宏毅课程视频（先看具身智能相关章节，最易懂）</a>
               <a class="tl-start-link" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP" target="_blank">⭐ MDN HTTP 基础（RESTful 概念，图文并茂）</a>
               <a class="tl-start-link" href="https://realpython.com/" target="_blank">⭐⭐ Real Python 进阶文章（装饰器/异步，英文，选看）</a>
+            </div>
+            <div class="tl-video-start">
+              <div class="tl-video-title">📺 看不懂？看视频讲解：</div>
+              <a class="tl-video-link" href="https://www.bilibili.com/video/BV1TAtwzTE1S/" target="_blank">▶ 李宏毅机器学习课（具身智能/强化学习章节，最易懂）</a>
             </div>
             <div class="tl-quiz">
               <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
@@ -829,9 +860,12 @@
             <div class="tl-start">
               <div class="tl-start-title">📚 本周从这里开始（按难度从低到高）：</div>
               <a class="tl-start-link" href="https://hrl.boyuai.com/chapter/2/" target="_blank">⭐ 动手学强化学习（中文，带完整代码，先跑 CartPole）</a>
-              <a class="tl-start-link" href="https://www.bilibili.com/video/BV18nb3zzEzV/" target="_blank">⭐⭐ 强化学习入门 6 小时视频（Q-learning 部分）</a>
               <a class="tl-start-link" href="https://gymnasium.farama.org/" target="_blank">⭐⭐ Gymnasium 官方文档（英文，遇到问题再查）</a>
               <a class="tl-start-link" href="https://pybullet.org/" target="_blank">⭐⭐⭐ PyBullet 官网（最后再碰，难度较高）</a>
+            </div>
+            <div class="tl-video-start">
+              <div class="tl-video-title">📺 看不懂？看视频讲解：</div>
+              <a class="tl-video-link" href="https://www.bilibili.com/video/BV18nb3zzEzV/" target="_blank">▶ 强化学习入门 6 小时（从 MDP 到 Q-learning，配 CartPole 实战）</a>
             </div>
             <div class="tl-quiz">
               <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
@@ -864,6 +898,10 @@
               <a class="tl-start-link" href="https://open-meteo.com/" target="_blank">⭐ 先用天气 API 练手（最简单，把第1-2周的串起来）</a>
               <a class="tl-start-link" href="https://learning.postman.com/" target="_blank">⭐⭐ Postman 学习中心（可视化调试 LLM API）</a>
               <a class="tl-start-link" href="https://github.com/bulletphysics/bullet3" target="_blank">⭐⭐⭐ Bullet3 GitHub 示例（机械臂控制，最难放最后）</a>
+            </div>
+            <div class="tl-video-start">
+              <div class="tl-video-title">📺 看不懂？看视频讲解：</div>
+              <a class="tl-video-link" href="https://www.bilibili.com/video/BV1ugo5BwEaD/" target="_blank">▶ DeepSeek API 从原理到编程实战（Python 调用 Chat Completions，流式输出）</a>
             </div>
             <div class="tl-quiz">
               <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
