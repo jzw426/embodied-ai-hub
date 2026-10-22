@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>具身智能学习导航 · Python + API 一个月进阶</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
+<style>
+  :root {
+    --bg: #0B1120;
+    --bg-soft: #131C33;
+    --card: #1A2542;
+    --card-hover: #1F2E52;
+    --border: #2A3A5F;
+    --primary: #2563EB;
+    --primary-light: #3B82F6;
+    --accent: #06B6D4;
+    --text: #E8EDF7;
+    --text-muted: #8B9BB8;
+    --text-dim: #5A6B8C;
+    --green: #10B981;
+    --orange: #F59E0B;
+    --purple: #8B5CF6;
+    --red: #EF4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ===== 顶部导航 ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(11, 17, 32, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 24px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .logo {
+    font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+  }
+  .logo-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    font-size: 14px; color: var(--text-muted); font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* 进度条 */
+  .nav-progress {
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+  }
+  .progress-bar {
+    width: 120px; height: 8px; border-radius: 100px;
+    background: var(--bg-soft); overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    font-size: 12px; color: var(--text-muted); font-weight: 600;
+    min-width: 40px;
+  }
+  .reset-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 11px; padding: 3px 10px;
+    border-radius: 6px; cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { color: var(--red); border-color: var(--red); }
+
+  /* ===== Hero ===== */
+  .hero {
+    padding: 140px 24px 80px;
+    text-align: center;
+    position: relative;
+    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37, 99, 235, 0.25), transparent);
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px; border-radius: 100px;
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    color: var(--accent); font-size: 13px; font-weight: 500;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 48px; font-weight: 900; line-height: 1.2;
+    max-width: 800px; margin: 0 auto 20px;
+    background: linear-gradient(135deg, #fff 30%, #93B4FF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 18px; color: var(--text-muted);
+    max-width: 600px; margin: 0 auto 32px;
+  }
+  .hero-video-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff; font-size: 16px; font-weight: 700;
+    border-radius: 100px;
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.4);
+    transition: all 0.25s;
+    margin-bottom: 16px;
+  }
+  .hero-video-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 32px rgba(37, 99, 235, 0.6);
+    gap: 14px;
+  }
+  .hero-video-btn .play-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .hero-video-note {
+    font-size: 13px; color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 48px;
+    flex-wrap: wrap; margin-top: 48px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 36px; font-weight: 900;
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ===== 通用容器 ===== */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 80px 0; }
+  .section-title {
+    font-size: 32px; font-weight: 700;
+    margin-bottom: 12px; text-align: center;
+  }
+  .section-sub {
+    font-size: 16px; color: var(--text-muted);
+    text-align: center; margin-bottom: 48px;
+  }
+
+  /* ===== 环境安装 ===== */
+  .install-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+    gap: 20px;
+  }
+  .install-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .install-card h3 {
+    font-size: 18px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .install-step { margin-bottom: 16px; }
+  .install-step-title {
+    font-size: 14px; font-weight: 600; color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .install-cmd {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px; color: #A5F3C8;
+    margin: 6px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .install-tip {
+    font-size: 13px; color: var(--text-dim);
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+    margin-top: 8px;
+  }
+  .install-tip strong { color: var(--orange); }
+
+  /* ===== 筛选 + 搜索 ===== */
+  .toolbar { margin-bottom: 32px; }
+  .filter-bar {
+    display: flex; justify-content: center; gap: 8px;
+    flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .filter-btn {
+    padding: 8px 18px; border-radius: 100px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-muted); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .filter-btn:hover { color: var(--text); border-color: var(--primary); }
+  .filter-btn.active {
+    background: var(--primary); border-color: var(--primary);
+    color: #fff;
+  }
+  .search-box {
+    max-width: 480px; margin: 0 auto;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 12px 20px 12px 44px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box input::placeholder { color: var(--text-dim); }
+  .search-box input:focus { border-color: var(--primary); }
+  .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim); font-size: 16px;
+  }
+  .result-count {
+    text-align: center; font-size: 13px;
+    color: var(--text-dim); margin-top: 12px;
+  }
+
+  /* ===== 资源卡片 ===== */
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .res-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.25s;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  .res-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .res-card:hover {
+    background: var(--card-hover);
+    border-color: var(--primary);
+    transform: translateY(-4px);
+  }
+  .res-card:hover::before { opacity: 1; }
+  .res-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .res-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .res-icon.python { background: rgba(55, 120, 200, 0.15); color: #60A5FA; }
+  .res-icon.api { background: rgba(6, 182, 212, 0.15); color: var(--accent); }
+  .res-icon.embodied { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+  .res-icon.video { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+  .res-icon.tool { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+  .res-title { font-size: 17px; font-weight: 700; flex: 1; }
+  .res-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .res-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; letter-spacing: 0.3px;
+  }
+  .tag-python { background: rgba(96, 165, 250, 0.15); color: #60A5FA; }
+  .tag-api { background: rgba(6, 182, 212, 0.15); color: var(--accent); }
+  .tag-embodied { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+  .tag-video { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+  .tag-tool { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+  .tag-beginner { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+  .tag-advanced { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .res-desc {
+    font-size: 14px; color: var(--text-muted);
+    line-height: 1.6; flex: 1; margin-bottom: 16px;
+  }
+  .res-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; font-weight: 600; color: var(--primary-light);
+    transition: gap 0.2s;
+  }
+  .res-card:hover .res-link { gap: 10px; }
+  .res-arrow { transition: transform 0.2s; }
+  .res-card:hover .res-arrow { transform: translateX(4px); }
+
+  /* ===== 时间轴 ===== */
+  .timeline-wrap { position: relative; max-width: 900px; margin: 0 auto; }
+  .timeline {
+    display: grid;
+    grid-template-columns: 80px 2px 1fr;
+    gap: 0;
+  }
+  .tl-day {
+    text-align: right; padding-right: 20px;
+    font-size: 14px; font-weight: 600; color: var(--accent);
+    align-self: center;
+  }
+  .tl-axis {
+    position: relative; background: var(--border);
+    justify-self: center; width: 2px;
+  }
+  .tl-dot {
+    position: absolute; left: 50%; top: 28px;
+    transform: translateX(-50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--primary);
+    z-index: 1;
+    transition: all 0.3s;
+  }
+  .tl-dot.done {
+    background: var(--green);
+    box-shadow: 0 0 0 2px var(--green);
+  }
+  .tl-content { padding: 0 0 40px 28px; }
+  .tl-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    transition: all 0.2s;
+  }
+  .tl-card:hover { border-color: var(--primary); }
+  .tl-card.completed { border-color: var(--green); }
+  .tl-week { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .tl-theme { font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 10px; }
+  .tl-items { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+  .tl-verify {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 13px; color: var(--text-dim);
+  }
+  .tl-verify strong { color: var(--green); }
+
+  /* 本周从这里开始 */
+  .tl-start {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px dashed var(--border);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .tl-start-title {
+    font-size: 13px; font-weight: 700; color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .tl-start-link {
+    font-size: 13px; color: var(--text-muted);
+    padding: 6px 10px; border-radius: 6px;
+    background: rgba(6, 182, 212, 0.06);
+    border-left: 2px solid var(--accent);
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .tl-start-link:hover {
+    color: var(--text);
+    background: rgba(6, 182, 212, 0.12);
+    transform: translateX(4px);
+  }
+
+  /* 本周自测 */
+  .tl-quiz {
+    margin-top: 14px; padding: 12px 14px;
+    background: rgba(245, 158, 11, 0.06);
+    border-left: 2px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .tl-quiz-title {
+    font-size: 13px; font-weight: 700; color: var(--orange);
+  }
+  .tl-quiz-q {
+    font-size: 13px; color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* 打卡按钮 */
+  .checkin-btn {
+    margin-top: 14px;
+    padding: 8px 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .checkin-btn:hover { border-color: var(--green); color: var(--green); }
+  .checkin-btn.done {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* ===== 页脚 ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 24px; text-align: center;
+    color: var(--text-dim); font-size: 13px;
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--card);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-size: 14px; font-weight: 600;
+    z-index: 200;
+    transition: transform 0.3s ease;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== 全局进度仪表盘 ===== */
+  .dashboard {
+    max-width: 700px; margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-around;
+    gap: 16px;
+  }
+  .dash-item { text-align: center; }
+  .dash-num {
+    font-size: 28px; font-weight: 900;
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .dash-label {
+    font-size: 12px; color: var(--text-muted); margin-top: 4px;
+  }
+  .dash-divider {
+    width: 1px; height: 40px; background: var(--border);
+  }
+
+  /* ===== 每日任务 ===== */
+  .daily-tabs {
+    display: flex; justify-content: center; gap: 8px;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .daily-tab {
+    padding: 8px 20px; border-radius: 100px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-muted); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .daily-tab.active {
+    background: var(--primary); border-color: var(--primary);
+    color: #fff;
+  }
+  .daily-panel {
+    max-width: 700px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .day-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .day-item:hover { border-color: var(--primary); }
+  .day-item.done { opacity: 0.6; }
+  .day-item.done .day-content { text-decoration: line-through; }
+  .day-check {
+    display: flex; align-items: center; cursor: pointer;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .day-check input { display: none; }
+  .day-box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 2px solid var(--border);
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .day-check input:checked + .day-box {
+    background: var(--green); border-color: var(--green);
+  }
+  .day-check input:checked + .day-box::after {
+    content: '✓'; color: #fff; font-size: 14px; font-weight: 900;
+  }
+  .day-content { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+  .day-content strong { color: var(--text); margin-right: 8px; }
+  .daily-progress {
+    text-align: center; margin-top: 24px;
+    font-size: 15px; color: var(--text-muted); font-weight: 600;
+  }
+  .daily-progress span { color: var(--accent); }
+
+  /* ===== 报错急救包 ===== */
+  .error-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .error-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    border-left: 3px solid var(--red);
+  }
+  .error-code {
+    font-family: 'Consolas', monospace;
+    font-size: 13px; color: #FCA5A5;
+    margin-bottom: 10px; font-weight: 600;
+  }
+  .error-reason {
+    font-size: 13px; color: var(--text-muted);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .error-reason strong { color: var(--orange); }
+  .error-fix {
+    font-size: 13px; color: var(--text);
+    line-height: 1.5;
+  }
+  .error-fix strong { color: var(--green); }
+
+  /* ===== 问答渠道 ===== */
+  .qa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .qa-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+  .qa-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+  .qa-name {
+    font-size: 16px; font-weight: 700; margin-bottom: 8px;
+    color: var(--text);
+  }
+  .qa-desc {
+    font-size: 13px; color: var(--text-muted); line-height: 1.5;
+  }
+
+  /* ===== 术语表 ===== */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .glossary-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .glossary-item strong {
+    display: block; color: var(--accent);
+    margin-bottom: 6px; font-size: 14px;
+  }
+  .glossary-item span { color: var(--text-muted); }
+
+  /* ===== 代码模板 ===== */
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 20px;
+  }
+  .template-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .template-card h3 {
+    font-size: 16px; font-weight: 700; margin-bottom: 14px;
+  }
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px; color: #A5F3C8;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    margin-bottom: 12px;
+  }
+  .template-note {
+    font-size: 13px; color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+    .hero p { font-size: 16px; }
+    .nav-links { display: none; }
+    .resource-grid { grid-template-columns: 1fr; }
+    .install-grid { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: 60px 2px 1fr; }
+    .tl-day { font-size: 12px; padding-right: 12px; }
+    .tl-content { padding-left: 16px; }
+    .hero-stats { gap: 24px; }
+    .nav-progress .progress-bar { width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 导航 ===== -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-mark">🤖</div>
+      <span>Embodied AI 学习导航</span>
+    </div>
+    <div class="nav-links">
+      <a href="#plan">学习计划</a>
+      <a href="#daily">每日任务</a>
+      <a href="#install">环境安装</a>
+      <a href="#errors">报错急救</a>
+      <a href="#glossary">术语表</a>
+      <a href="#resources">资源导航</a>
+      <a href="#templates">代码模板</a>
+      <a href="#projects">项目实战</a>
+    </div>
+    <div class="nav-progress">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-text" id="progressText">0/4 周</span>
+      <button class="reset-btn" id="resetBtn" title="重置打卡进度">重置</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="hero-badge">🚀 一个月进阶 · 每天 3-4 小时</div>
+  <h1>具身智能 × Python × API<br>一个月学习路线</h1>
+  <p>从零基础到能跑通仿真机器人 demo，系统整合 Python 编程、API 调用与具身智能三大方向的优质学习资源，全部一键直达。</p>
+  <a class="hero-video-btn" href="https://www.bilibili.com/video/BV1J5dpBqE4c/" target="_blank">
+    <span class="play-icon">▶</span>
+    观看视频讲解：什么是具身智能？
+  </a>
+  <div class="hero-video-note">🎬 B站 · 1小时保姆级入门教程，P2 含零基础学习路线图</div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-label">周进阶计划</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">17+</div>
+      <div class="stat-label">精选资源</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">实战项目</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">28</div>
+      <div class="stat-label">天打卡</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 全局进度仪表盘 ===== -->
+<section style="padding: 20px 0 0;">
+  <div class="container">
+    <div class="dashboard">
+      <div class="dash-item">
+        <div class="dash-num" id="dashWeek">0/4</div>
+        <div class="dash-label">周打卡</div>
+      </div>
+      <div class="dash-divider"></div>
+      <div class="dash-item">
+        <div class="dash-num" id="dashDay">0/28</div>
+        <div class="dash-label">日打卡</div>
+      </div>
+      <div class="dash-divider"></div>
+      <div class="dash-item">
+        <div class="dash-num" id="dashStreak">0</div>
+        <div class="dash-label">连续天数</div>
+      </div>
+      <div class="dash-divider"></div>
+      <div class="dash-item">
+        <div class="dash-num" id="dashPercent">0%</div>
+        <div class="dash-label">总进度</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 学习计划时间轴 ===== -->
+<section id="plan" style="padding-top: 40px;">
+  <div class="container">
+    <h2 class="section-title">四周学习路线图</h2>
+    <p class="section-sub">每周一个主题递进，完成后点按钮打卡</p>
+
+    <div class="timeline-wrap">
+      <div class="timeline" id="timeline">
+        <!-- 第1周 -->
+        <div class="tl-day">第 1 周</div>
+        <div class="tl-axis"><div class="tl-dot" data-week="1"></div></div>
+        <div class="tl-content">
+          <div class="tl-card" data-week-card="1">
+            <div class="tl-week">Python 基础强化 + API 入门</div>
+            <div class="tl-theme">主题：夯实基本功，迈出 API 第一步</div>
+            <div class="tl-items">
+              • Python 核心语法、函数、面向对象、文件读写<br>
+              • HTTP 基础 + requests 库调用免费 API<br>
+              • 小项目：命令行天气查询工具
+            </div>
+            <div class="tl-verify">
+              <strong>验收：</strong>能独立写类与函数的脚本，用 requests 调用 2+ 公共 API
+            </div>
+            <div class="tl-start">
+              <div class="tl-start-title">📚 本周从这里开始（按难度从低到高）：</div>
+              <a class="tl-start-link" href="https://www.runoob.com/python/" target="_blank">⭐ 菜鸟教程 Python（最友好，前3天先看这个）</a>
+              <a class="tl-start-link" href="https://liaoxuefeng.com/books/python/index.html" target="_blank">⭐⭐ 廖雪峰 Python 教程（第3-5天进阶看）</a>
+              <a class="tl-start-link" href="https://docs.python-requests.org/projects/cn/zh-cn/latest/" target="_blank">⭐ requests 中文文档（第5-6天）</a>
+              <a class="tl-start-link" href="https://jsonplaceholder.typicode.com/" target="_blank">⭐ JSONPlaceholder 练手（第6-7天）</a>
+            </div>
+            <div class="tl-quiz">
+              <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
+              <div class="tl-quiz-q">1. 什么是 API？举一个生活中的例子</div>
+              <div class="tl-quiz-q">2. requests.get() 返回的对象怎么拿到 JSON 数据？</div>
+              <div class="tl-quiz-q">3. 函数和方法有什么区别？</div>
+            </div>
+            <button class="checkin-btn" data-week-btn="1">✅ 本周完成打卡</button>
+          </div>
+        </div>
+
+        <!-- 第2周 -->
+        <div class="tl-day">第 2 周</div>
+        <div class="tl-axis"><div class="tl-dot" data-week="2"></div></div>
+        <div class="tl-content">
+          <div class="tl-card" data-week-card="2">
+            <div class="tl-week">Python 进阶 + API 封装 + 具身智能概念</div>
+            <div class="tl-theme">主题：进阶特性 + API 封装能力 + 建立知识框架</div>
+            <div class="tl-items">
+              • 装饰器、生成器、异步 asyncio、aiohttp<br>
+              • RESTful API、鉴权、错误重试、API 模块化封装<br>
+              • 具身智能概念入门：感知-决策-控制技术栈
+            </div>
+            <div class="tl-verify">
+              <strong>验收：</strong>能并发调用多 API 并封装成模块，能用自己的话解释具身智能
+            </div>
+            <div class="tl-start">
+              <div class="tl-start-title">📚 本周从这里开始（按难度从低到高）：</div>
+              <a class="tl-start-link" href="https://www.bilibili.com/video/BV1TAtwzTE1S/" target="_blank">⭐ 李宏毅课程视频（先看具身智能相关章节，最易懂）</a>
+              <a class="tl-start-link" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP" target="_blank">⭐ MDN HTTP 基础（RESTful 概念，图文并茂）</a>
+              <a class="tl-start-link" href="https://realpython.com/" target="_blank">⭐⭐ Real Python 进阶文章（装饰器/异步，英文，选看）</a>
+            </div>
+            <div class="tl-quiz">
+              <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
+              <div class="tl-quiz-q">1. 什么是 RESTful API？GET 和 POST 的区别？</div>
+              <div class="tl-quiz-q">2. 装饰器 @wraps 是干嘛的？什么时候要用？</div>
+              <div class="tl-quiz-q">3. 用自己的话解释什么是具身智能，和聊天机器人有什么区别？</div>
+            </div>
+            <button class="checkin-btn" data-week-btn="2">✅ 本周完成打卡</button>
+          </div>
+        </div>
+
+        <!-- 第3周 -->
+        <div class="tl-day">第 3 周</div>
+        <div class="tl-axis"><div class="tl-dot" data-week="3"></div></div>
+        <div class="tl-content">
+          <div class="tl-card" data-week-card="3">
+            <div class="tl-week">具身智能核心技术 + 仿真环境实战</div>
+            <div class="tl-theme">主题：进入仿真环境，跑通第一个 demo</div>
+            <div class="tl-items">
+              • 强化学习基础：MDP、奖励函数、策略<br>
+              • Gymnasium 环境入门：CartPole 随机策略与 Q-learning<br>
+              • PyBullet 加载机器人模型、机械臂运动控制<br>
+              • 小项目：机器人到达目标点仿真
+            </div>
+            <div class="tl-verify">
+              <strong>验收：</strong>能在 Gymnasium 跑 episode，PyBullet 控制简单运动
+            </div>
+            <div class="tl-start">
+              <div class="tl-start-title">📚 本周从这里开始（按难度从低到高）：</div>
+              <a class="tl-start-link" href="https://hrl.boyuai.com/chapter/2/" target="_blank">⭐ 动手学强化学习（中文，带完整代码，先跑 CartPole）</a>
+              <a class="tl-start-link" href="https://www.bilibili.com/video/BV18nb3zzEzV/" target="_blank">⭐⭐ 强化学习入门 6 小时视频（Q-learning 部分）</a>
+              <a class="tl-start-link" href="https://gymnasium.farama.org/" target="_blank">⭐⭐ Gymnasium 官方文档（英文，遇到问题再查）</a>
+              <a class="tl-start-link" href="https://pybullet.org/" target="_blank">⭐⭐⭐ PyBullet 官网（最后再碰，难度较高）</a>
+            </div>
+            <div class="tl-quiz">
+              <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
+              <div class="tl-quiz-q">1. 强化学习里的 State / Action / Reward 分别是什么？</div>
+              <div class="tl-quiz-q">2. Q-learning 的 Q 表存的是什么？怎么更新？</div>
+              <div class="tl-quiz-q">3. Gymnasium 里 env.step() 返回的 5 个值分别是什么意思？</div>
+            </div>
+            <button class="checkin-btn" data-week-btn="3">✅ 本周完成打卡</button>
+          </div>
+        </div>
+
+        <!-- 第4周 -->
+        <div class="tl-day">第 4 周</div>
+        <div class="tl-axis"><div class="tl-dot" data-week="4"></div></div>
+        <div class="tl-content">
+          <div class="tl-card" data-week-card="4">
+            <div class="tl-week">综合项目 + 成果整理</div>
+            <div class="tl-theme">主题：自然语言 → LLM → 仿真机器人 全链路</div>
+            <div class="tl-items">
+              • 调用 LLM API 生成动作指令<br>
+              • 解析 LLM 输出为机器人控制命令<br>
+              • 接入 PyBullet 环境执行动作<br>
+              • 代码优化、README 文档、演示准备
+            </div>
+            <div class="tl-verify">
+              <strong>验收：</strong>完成可运行的综合项目，有 README 与演示
+            </div>
+            <div class="tl-start">
+              <div class="tl-start-title">📚 本周从这里开始（按难度从低到高）：</div>
+              <a class="tl-start-link" href="https://open-meteo.com/" target="_blank">⭐ 先用天气 API 练手（最简单，把第1-2周的串起来）</a>
+              <a class="tl-start-link" href="https://learning.postman.com/" target="_blank">⭐⭐ Postman 学习中心（可视化调试 LLM API）</a>
+              <a class="tl-start-link" href="https://github.com/bulletphysics/bullet3" target="_blank">⭐⭐⭐ Bullet3 GitHub 示例（机械臂控制，最难放最后）</a>
+            </div>
+            <div class="tl-quiz">
+              <div class="tl-quiz-title">🤔 本周自测（答不上就回去补）：</div>
+              <div class="tl-quiz-q">1. 你的项目从输入到输出经过了哪几个步骤？画个流程图</div>
+              <div class="tl-quiz-q">2. LLM 返回的内容你是怎么解析成机器人动作的？</div>
+              <div class="tl-quiz-q">3. 如果让你再做一次，你会改进哪 3 个地方？</div>
+            </div>
+            <button class="checkin-btn" data-week-btn="4">✅ 本周完成打卡</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 每日任务清单 ===== -->
+<section id="daily" style="background: var(--bg-soft); padding-top: 60px;">
+  <div class="container">
+    <h2 class="section-title">28 天每日任务清单</h2>
+    <p class="section-sub">每天打开就知道今天该干嘛，完成打勾，进度自动保存</p>
+
+    <div class="daily-tabs">
+      <button class="daily-tab active" data-week-tab="1">第 1 周</button>
+      <button class="daily-tab" data-week-tab="2">第 2 周</button>
+      <button class="daily-tab" data-week-tab="3">第 3 周</button>
+      <button class="daily-tab" data-week-tab="4">第 4 周</button>
+    </div>
+
+    <div class="daily-panel" data-week-panel="1">
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="1"><span class="day-box"></span></label><div class="day-content"><strong>Day 1</strong>：安装 Python，跑通 hello world；看菜鸟教程「Python 简介 + 环境搭建」</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="2"><span class="day-box"></span></label><div class="day-content"><strong>Day 2</strong>：菜鸟教程「基础语法 + 变量类型」，写 5 个 print 练习</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="3"><span class="day-box"></span></label><div class="day-content"><strong>Day 3</strong>：菜鸟教程「条件语句 + 循环语句」，写一个九九乘法表</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="4"><span class="day-box"></span></label><div class="day-content"><strong>Day 4</strong>：菜鸟教程「字符串 + 列表/字典」，练习增删改查</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="5"><span class="day-box"></span></label><div class="day-content"><strong>Day 5</strong>：廖雪峰「函数 + 模块」，写一个能复用的函数</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="6"><span class="day-box"></span></label><div class="day-content"><strong>Day 6</strong>：requests 中文文档，用 requests 调 JSONPlaceholder 拿数据</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="7"><span class="day-box"></span></label><div class="day-content"><strong>Day 7</strong>：小项目——命令行天气查询（调 Open-Meteo API）</div></div>
+    </div>
+
+    <div class="daily-panel" data-week-panel="2" style="display:none;">
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="8"><span class="day-box"></span></label><div class="day-content"><strong>Day 8</strong>：MDN HTTP 基础——GET/POST/状态码，理解 RESTful</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="9"><span class="day-box"></span></label><div class="day-content"><strong>Day 9</strong>：Python 面向对象（类、继承），写一个简单的机器人类</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="10"><span class="day-box"></span></label><div class="day-content"><strong>Day 10</strong>：装饰器 + 生成器，理解 @ 语法糖</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="11"><span class="day-box"></span></label><div class="day-content"><strong>Day 11</strong>：异步 asyncio + aiohttp，并发调 3 个 API</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="12"><span class="day-box"></span></label><div class="day-content"><strong>Day 12</strong>：把 API 调用封装成一个可复用的模块（class 形式）</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="13"><span class="day-box"></span></label><div class="day-content"><strong>Day 13</strong>：看李宏毅课程，选看「具身智能/强化学习」相关章节做笔记</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="14"><span class="day-box"></span></label><div class="day-content"><strong>Day 14</strong>：用自己的话写 200 字总结"什么是具身智能"</div></div>
+    </div>
+
+    <div class="daily-panel" data-week-panel="3" style="display:none;">
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="15"><span class="day-box"></span></label><div class="day-content"><strong>Day 15</strong>：动手学强化学习——MDP、状态、动作、奖励的概念</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="16"><span class="day-box"></span></label><div class="day-content"><strong>Day 16</strong>：装 Gymnasium，跑通 CartPole 随机策略（不动大脑瞎玩）</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="17"><span class="day-box"></span></label><div class="day-content"><strong>Day 17</strong>：Q-learning 原理，看动手学强化学习第 3 章</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="18"><span class="day-box"></span></label><div class="day-content"><strong>Day 18</strong>：手写 Q-learning 表格版本，让 CartPole 撑过 200 步</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="19"><span class="day-box"></span></label><div class="day-content"><strong>Day 19</strong>：装 PyBullet，加载第一个机器人模型看一眼</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="20"><span class="day-box"></span></label><div class="day-content"><strong>Day 20</strong>：PyBullet 基础——让机械臂左右移动</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="21"><span class="day-box"></span></label><div class="day-content"><strong>Day 21</strong>：小项目——机器人到达目标点仿真</div></div>
+    </div>
+
+    <div class="daily-panel" data-week-panel="4" style="display:none;">
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="22"><span class="day-box"></span></label><div class="day-content"><strong>Day 22</strong>：注册一个 LLM API（OpenAI/DeepSeek/通义千问），Postman 调通</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="23"><span class="day-box"></span></label><div class="day-content"><strong>Day 23</strong>：Python 调 LLM API，让它返回 JSON 格式的动作指令</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="24"><span class="day-box"></span></label><div class="day-content"><strong>Day 24</strong>：解析 LLM 返回的 JSON，映射成 PyBullet 动作</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="25"><span class="day-box"></span></label><div class="day-content"><strong>Day 25</strong>：把整个 pipeline 串起来——自然语言 → LLM → 仿真执行</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="26"><span class="day-box"></span></label><div class="day-content"><strong>Day 26</strong>：优化代码，加错误处理和日志</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="27"><span class="day-box"></span></label><div class="day-content"><strong>Day 27</strong>：写 README 文档（项目介绍、安装方法、运行截图）</div></div>
+      <div class="day-item"><label class="day-check"><input type="checkbox" data-day="28"><span class="day-box"></span></label><div class="day-content"><strong>Day 28</strong>：录一个演示视频，发 GitHub，一个月结业！</div></div>
+    </div>
+
+    <div class="daily-progress">
+      今日进度：<span id="dailyProgressText">0 / 28 天</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 环境安装避坑指南 ===== -->
+<section id="install" style="background: var(--bg-soft);">
+  <div class="container">
+    <h2 class="section-title">环境安装避坑指南</h2>
+    <p class="section-sub">Windows 环境下的一键安装命令与常见问题</p>
+
+    <div class="install-grid">
+      <div class="install-card">
+        <h3>🐍 Python 环境（推荐 3.10+）</h3>
+        <div class="install-step">
+          <div class="install-step-title">1. 下载安装</div>
+          <div style="font-size:14px;color:var(--text-muted);margin-bottom:6px;">
+            官网下载 Python 3.10 或更高版本，安装时<strong style="color:var(--text);">务必勾选 "Add Python to PATH"</strong>。
+          </div>
+          <div class="install-cmd">python --version
+pip --version</div>
+          <div class="install-tip">
+            <strong>避坑：</strong>如果提示 "python 不是内部或外部命令"，说明安装时没勾 PATH，重新运行安装程序选 Modify 补上即可。
+          </div>
+        </div>
+      </div>
+
+      <div class="install-card">
+        <h3>📦 虚拟环境（强烈建议）</h3>
+        <div class="install-step">
+          <div class="install-step-title">创建并激活 venv</div>
+          <div class="install-cmd">python -m venv venv
+venv\Scripts\activate</div>
+          <div class="install-tip">
+            <strong>为什么要建：</strong>不同项目依赖版本会冲突，虚拟环境能隔离。激活后命令行前面会出现 (venv)。
+          </div>
+        </div>
+      </div>
+
+      <div class="install-card">
+        <h3>🏋️ Gymnasium（强化学习环境）</h3>
+        <div class="install-step">
+          <div class="install-step-title">安装命令</div>
+          <div class="install-cmd">pip install gymnasium
+pip install "gymnasium[classic-control]"</div>
+          <div class="install-tip">
+            <strong>避坑：</strong>旧教程里的 OpenAI Gym 已停更，现在统一用 Gymnasium（Farama 基金会维护）。CartPole 属于 classic-control 模块，必须额外装。
+          </div>
+        </div>
+      </div>
+
+      <div class="install-card">
+        <h3>🦾 PyBullet（机器人仿真）</h3>
+        <div class="install-step">
+          <div class="install-step-title">安装命令</div>
+          <div class="install-cmd">pip install pybullet
+pip install numpy matplotlib</div>
+          <div class="install-tip">
+            <strong>避坑：</strong>Windows 上首次运行会下载额外资源，耐心等 1-2 分钟。如果报错，先升级 pip：<code>python -m pip install --upgrade pip</code>。
+          </div>
+        </div>
+      </div>
+
+      <div class="install-card">
+        <h3>🔌 requests（API 调用）</h3>
+        <div class="install-step">
+          <div class="install-step-title">安装命令</div>
+          <div class="install-cmd">pip install requests
+pip install aiohttp</div>
+          <div class="install-tip">
+            <strong>说明：</strong>requests 用于同步调用，aiohttp 用于第 2 周的异步并发调用。
+          </div>
+        </div>
+      </div>
+
+      <div class="install-card">
+        <h3>✅ 一键验证全部安装</h3>
+        <div class="install-step">
+          <div class="install-step-title">复制下面这段代码保存为 check_env.py，运行即可</div>
+          <div class="install-cmd">import sys
+print(f"Python 版本: {sys.version}")
+try:
+    import requests; print(f"✓ requests {requests.__version__}")
+except: print("✗ requests 未安装")
+try:
+    import gymnasium; print(f"✓ gymnasium {gymnasium.__version__}")
+except: print("✗ gymnasium 未安装")
+try:
+    import pybullet; print("✓ pybullet 已安装")
+except: print("✗ pybullet 未安装")
+try:
+    import numpy; print(f"✓ numpy {numpy.__version__}")
+except: print("✗ numpy 未安装")
+print("\n全部通过就可以开始学习了！")</div>
+          <div class="install-tip">
+            <strong>用法：</strong>把上面代码复制到记事本，存为 check_env.py，然后在命令行运行 python check_env.py，绿勾越多环境越全。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 常见报错急救包 ===== -->
+<section id="errors">
+  <div class="container">
+    <h2 class="section-title">常见报错急救包</h2>
+    <p class="section-sub">零基础最容易踩的坑，遇到直接查，不用去搜半天</p>
+
+    <div class="error-grid">
+      <div class="error-card">
+        <div class="error-code">'python' 不是内部或外部命令</div>
+        <div class="error-reason"><strong>原因：</strong>安装 Python 时没勾 "Add Python to PATH"</div>
+        <div class="error-fix"><strong>解决：</strong>① 重新运行安装包 → Modify → 勾选 Add to PATH；② 或者手动把 Python 安装目录加到系统环境变量 PATH</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">ModuleNotFoundError: No module named 'xxx'</div>
+        <div class="error-reason"><strong>原因：</strong>没装这个库，或者装在了别的虚拟环境里</div>
+        <div class="error-fix"><strong>解决：</strong>① 先确认 venv 已激活（命令行前面有 (venv)）；② pip install xxx；③ 还不行就 pip install --upgrade pip 再试</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">pip 安装超时 / 下载慢</div>
+        <div class="error-reason"><strong>原因：</strong>默认源在国外，国内访问慢</div>
+        <div class="error-fix"><strong>解决：</strong>换清华源：pip install xxx -i https://pypi.tuna.tsinghua.edu.cn/simple</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">CartPole 跑不起来 / No module named 'gym'</div>
+        <div class="error-reason"><strong>原因：</strong>老教程用的是 OpenAI Gym，现在已停更</div>
+        <div class="error-fix"><strong>解决：</strong>pip install gymnasium "gymnasium[classic-control]"，代码里 import gymnasium as gym</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">PyBullet 安装报错 / 运行卡住</div>
+        <div class="error-reason"><strong>原因：</strong>Windows 首次运行要下载额外资源，pip 版本太低</div>
+        <div class="error-fix"><strong>解决：</strong>① python -m pip install --upgrade pip；② pip install pybullet；③ 运行时等 1-2 分钟别关窗口</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">JSON 解析报错 / JSONDecodeError</div>
+        <div class="error-reason"><strong>原因：</strong>API 返回的不是 JSON，可能是 HTML 错误页</div>
+        <div class="error-fix"><strong>解决：</strong>先 print(response.status_code) 和 print(response.text[:200]) 看看返回了啥，大概率是 URL 拼错了或 API 挂了</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">API 调用 401 Unauthorized</div>
+        <div class="error-reason"><strong>原因：</strong>需要 API Key，但你没传或者传错了</div>
+        <div class="error-fix"><strong>解决：</strong>检查请求头里的 Authorization 字段，确认 Key 没过期、没多空格</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code">中文乱码 / UnicodeDecodeError</div>
+        <div class="error-reason"><strong>原因：</strong>Windows 默认编码不是 UTF-8</div>
+        <div class="error-fix"><strong>解决：</strong>open() 函数加 encoding='utf-8'：open('file.txt', 'r', encoding='utf-8')</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 遇到问题去哪问 ===== -->
+<section style="background: var(--bg-soft);">
+  <div class="container">
+    <h2 class="section-title">遇到问题去哪问</h2>
+    <p class="section-sub">报错别干着急，这几个地方一搜就有答案</p>
+
+    <div class="qa-grid">
+      <a href="https://stackoverflow.com/" target="_blank" class="qa-card">
+        <div class="qa-name">Stack Overflow</div>
+        <div class="qa-desc">全球最大程序员问答社区，99% 的报错这里都有人问过，英文问题但答案有翻译</div>
+      </a>
+      <a href="https://www.csdn.net/" target="_blank" class="qa-card">
+        <div class="qa-name">CSDN</div>
+        <div class="qa-desc">中文技术社区，搜报错关键词基本能找到一模一样的解决方案</div>
+      </a>
+      <a href="https://www.zhihu.com/" target="_blank" class="qa-card">
+        <div class="qa-name">知乎</div>
+        <div class="qa-desc">概念性问题优先搜，比如"什么是强化学习"、"具身智能怎么入门"</div>
+      </a>
+      <a href="https://www.bilibili.com/" target="_blank" class="qa-card">
+        <div class="qa-name">B站评论区</div>
+        <div class="qa-desc">看视频教程时遇到问题，直接翻评论区，up主和其他同学都会回答</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 术语速查表 ===== -->
+<section id="glossary" style="background: var(--bg-soft);">
+  <div class="container">
+    <h2 class="section-title">术语速查表</h2>
+    <p class="section-sub">遇到陌生名词不用搜，一句话看懂</p>
+
+    <div class="glossary-grid">
+      <div class="glossary-item"><strong>State（状态）</strong><span>机器人当前所处的环境描述，比如小车位置、杆子角度</span></div>
+      <div class="glossary-item"><strong>Action（动作）</strong><span>机器人能做的操作，比如"向左推"、"向右推"</span></div>
+      <div class="glossary-item"><strong>Reward（奖励）</strong><span>做完动作后环境给的反馈，加分还是扣分，强化学习的目标就是拿更多分</span></div>
+      <div class="glossary-item"><strong>Episode（回合）</strong><span>一局游戏，从开始到结束（比如杆子倒了就结束）</span></div>
+      <div class="glossary-item"><strong>Policy（策略）</strong><span>机器人的"大脑"，决定看到什么状态该做什么动作</span></div>
+      <div class="glossary-item"><strong>MDP（马尔可夫决策过程）</strong><span>强化学习的数学框架，简单说就是"状态→动作→奖励→新状态"的循环</span></div>
+      <div class="glossary-item"><strong>Q-learning</strong><span>一种经典强化学习算法，学习每个状态下每个动作的"价值"，选价值最高的</span></div>
+      <div class="glossary-item"><strong>LLM（大语言模型）</strong><span>GPT、DeepSeek、通义千问这类AI，能听懂自然语言指令</span></div>
+      <div class="glossary-item"><strong>API（接口）</strong><span>不同程序之间互相调用的通道，比如你的Python代码调天气网站拿数据</span></div>
+      <div class="glossary-item"><strong>RESTful</strong><span>一种API设计风格，用URL表示资源，用GET/POST表示操作</span></div>
+      <div class="glossary-item"><strong>仿真环境</strong><span>在电脑里模拟真实物理世界，不用真机器人也能训练算法</span></div>
+      <div class="glossary-item"><strong>具身智能</strong><span>AI有了"身体"，能在真实或仿真环境里通过交互学习，而不只是聊天</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 资源导航 ===== -->
+<section id="resources">
+  <div class="container">
+    <h2 class="section-title">精选学习资源</h2>
+    <p class="section-sub">全部经过筛选，点击卡片直达官网，支持搜索和难度筛选</p>
+
+    <div class="toolbar">
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">全部</button>
+        <button class="filter-btn" data-filter="python">Python 基础</button>
+        <button class="filter-btn" data-filter="api">API 调用</button>
+        <button class="filter-btn" data-filter="embodied">具身智能</button>
+        <button class="filter-btn" data-filter="video">视频课程</button>
+      </div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="搜索资源名称或关键词...">
+      </div>
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <div class="resource-grid" id="resourceGrid"></div>
+  </div>
+</section>
+
+<!-- ===== 代码模板库 ===== -->
+<section id="templates">
+  <div class="container">
+    <h2 class="section-title">可直接抄的代码模板</h2>
+    <p class="section-sub">复制粘贴改改就能跑，不用从零写</p>
+
+    <div class="template-grid">
+      <div class="template-card">
+        <h3>🌤️ 调天气 API 模板</h3>
+        <pre class="code-block">import requests
+
+url = "https://api.open-meteo.com/v1/forecast"
+params = {
+    "latitude": 28.68,   # 南昌纬度
+    "longitude": 115.86, # 南昌经度
+    "current_weather": True
+}
+
+resp = requests.get(url, params=params)
+data = resp.json()
+
+print(f"当前温度：{data['current_weather']['temperature']}°C")
+print(f"风速：{data['current_weather']['windspeed']} km/h")</pre>
+        <div class="template-note">第1周项目直接用这个，改城市坐标就行</div>
+      </div>
+
+      <div class="template-card">
+        <h3>📨 调 LLM API 模板（DeepSeek 为例）</h3>
+        <pre class="code-block">import requests
+
+url = "https://api.deepseek.com/v1/chat/completions"
+headers = {
+    "Authorization": "Bearer 你的API_KEY",
+    "Content-Type": "application/json"
+}
+data = {
+    "model": "deepseek-chat",
+    "messages": [
+        {"role": "user", "content": "让机械臂往左移动，用JSON返回：{\"action\":\"left\",\"speed\":0.5}"}
+    ]
+}
+
+resp = requests.post(url, headers=headers, json=data)
+result = resp.json()
+print(result["choices"][0]["message"]["content"])</pre>
+        <div class="template-note">第4周核心，把API_KEY换成你自己的</div>
+      </div>
+
+      <div class="template-card">
+        <h3>🎮 CartPole 随机策略模板</h3>
+        <pre class="code-block">import gymnasium as gym
+
+env = gym.make("CartPole-v1")
+obs, info = env.reset()
+
+for step in range(200):
+    env.render()
+    action = env.action_space.sample()  # 随机瞎选
+    obs, reward, terminated, truncated, info = env.step(action)
+    if terminated or truncated:
+        print(f"撑了 {step} 步")
+        break
+
+env.close()</pre>
+        <div class="template-note">第3周入门先跑这个，看杆子能撑多久</div>
+      </div>
+
+      <div class="template-card">
+        <h3>🤖 PyBullet 加载机器人模板</h3>
+        <pre class="code-block">import pybullet as p
+import pybullet_data
+
+physicsClient = p.connect(p.GUI)
+p.setAdditionalSearchPath(pybullet_data.getDataPath())
+p.setGravity(0, 0, -9.8)
+
+# 加载地面和机器人
+planeId = p.loadURDF("plane.urdf")
+robotId = p.loadURDF("r2d2.urdf", [0, 0, 1])
+
+# 跑 1000 步看看
+for i in range(1000):
+    p.stepSimulation()
+
+p.disconnect()</pre>
+        <div class="template-note">第3周加载机器人用，GUI模式能看到画面</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 项目实战 ===== -->
+<section id="projects" style="background: var(--bg-soft);">
+  <div class="container">
+    <h2 class="section-title">推荐实战项目</h2>
+    <p class="section-sub">边学边练，每个阶段都有对应的动手项目</p>
+
+    <div class="resource-grid">
+      <a href="https://jsonplaceholder.typicode.com/" target="_blank" class="res-card">
+        <div class="res-header">
+          <div class="res-icon tool">📝</div>
+          <div class="res-title">命令行天气查询工具</div>
+          <span class="res-tag tag-api">第1周</span>
+        </div>
+        <div class="res-desc">
+          调用 Open-Meteo 免费天气 API，用 Python 实现命令行查询，练习 requests、JSON 解析、异常处理与命令行交互。
+        </div>
+        <div class="res-link">查看 JSONPlaceholder 测试接口 <span class="res-arrow">→</span></div>
+      </a>
+
+      <a href="https://gymnasium.farama.org/" target="_blank" class="res-card">
+        <div class="res-header">
+          <div class="res-icon embodied">🎮</div>
+          <div class="res-title">CartPole Q-learning 智能体</div>
+          <span class="res-tag tag-embodied">第3周</span>
+        </div>
+        <div class="res-desc">
+          在 Gymnasium 的 CartPole 环境中实现 Q-learning 算法，训练平衡杆不倒，理解强化学习的核心循环。
+        </div>
+        <div class="res-link">打开 Gymnasium 文档 <span class="res-arrow">→</span></div>
+      </a>
+
+      <a href="https://pybullet.org/" target="_blank" class="res-card">
+        <div class="res-header">
+          <div class="res-icon embodied">🦾</div>
+          <div class="res-title">LLM 驱动仿真机器人</div>
+          <span class="res-tag tag-embodied">第4周</span>
+        </div>
+        <div class="res-desc">
+          调用 LLM API 把自然语言指令解析为机械臂动作，接入 PyBullet 仿真环境执行，完成端到端具身智能 pipeline。
+        </div>
+        <div class="res-link">打开 PyBullet 官网 <span class="res-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Embodied AI Learning Hub · 为大一新生定制的一个月进阶路线</p>
+  <p style="margin-top: 8px;">所有资源链接均指向官方网站，学习过程中如遇问题可随时回顾周计划调整节奏</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== 资源数据 =====
+  const resources = [
+    { cat: 'python', icon: 'python', iconBg: '📘', title: '菜鸟教程 Python（最友好）', tag: 'tag-python', tagText: 'Python', diff: '入门',
+      desc: '中文图文教程，每章配示例，零基础首选，比廖雪峰更简单直白。',
+      url: 'https://www.runoob.com/python/' },
+    { cat: 'python', icon: 'python', iconBg: '🐍', title: '廖雪峰 Python 教程', tag: 'tag-python', tagText: 'Python', diff: '入门',
+      desc: '中文免费零基础教程，基于 Python 3，完整示例，从安装到面向对象、函数、模块全覆盖。',
+      url: 'https://liaoxuefeng.com/books/python/index.html' },
+    { cat: 'python', icon: 'python', iconBg: '📖', title: 'Python 官方文档（中文）', tag: 'tag-python', tagText: 'Python', diff: '进阶',
+      desc: 'Python 3 官方中文文档，语言参考与标准库手册，遇到语法问题随时查阅。',
+      url: 'https://docs.python.org/zh-cn/3/' },
+    { cat: 'python', icon: 'python', iconBg: '💡', title: 'Real Python', tag: 'tag-python', tagText: 'Python', diff: '进阶',
+      desc: '高质量英文进阶教程网站，装饰器、异步、数据处理等进阶主题文章质量高。',
+      url: 'https://realpython.com/' },
+
+    { cat: 'api', icon: 'api', iconBg: '🔌', title: 'requests 官方文档（英文）', tag: 'tag-api', tagText: 'API', diff: '入门',
+      desc: 'Python HTTP 库 requests 的官方文档，快速上手 GET/POST、Session、鉴权与错误处理。',
+      url: 'https://requests.readthedocs.io/en/latest/' },
+    { cat: 'api', icon: 'api', iconBg: '🔧', title: 'requests 中文文档', tag: 'tag-api', tagText: 'API', diff: '入门',
+      desc: 'requests 官方中文翻译版，适合快速查阅常用方法与参数。',
+      url: 'https://docs.python-requests.org/projects/cn/zh-cn/latest/' },
+    { cat: 'api', icon: 'api', iconBg: '🌐', title: 'MDN HTTP 基础', tag: 'tag-api', tagText: 'API', diff: '入门',
+      desc: 'Mozilla 开发者网络的 HTTP 协议中文教程，理解请求方法、状态码、Headers 等基础概念。',
+      url: 'https://developer.mozilla.org/zh-CN/docs/Web/HTTP' },
+    { cat: 'api', icon: 'tool', iconBg: '🧪', title: 'JSONPlaceholder 测试接口', tag: 'tag-tool', tagText: '工具', diff: '入门',
+      desc: '免费的假 REST API，无需注册和 API Key，适合练习 GET/POST/PUT/DELETE 等所有方法。',
+      url: 'https://jsonplaceholder.typicode.com/' },
+    { cat: 'api', icon: 'tool', iconBg: '🌤️', title: 'Open-Meteo 天气 API', tag: 'tag-tool', tagText: '工具', diff: '入门',
+      desc: '免费的天气数据 API，无需 API Key，用于第 1 周的命令行天气查询项目。',
+      url: 'https://open-meteo.com/' },
+    { cat: 'api', icon: 'tool', iconBg: '📮', title: 'Postman 学习中心', tag: 'tag-tool', tagText: '工具', diff: '进阶',
+      desc: 'Postman 官方免费教程，可视化调试 API，学习 RESTful 设计与接口测试。',
+      url: 'https://learning.postman.com/' },
+
+    { cat: 'embodied', icon: 'embodied', iconBg: '📗', title: '动手学强化学习（中文）', tag: 'tag-embodied', tagText: '具身智能', diff: '入门',
+      desc: '伯禹AI出品的中文强化学习教程，每章配完整代码，CartPole/DQN 实战首选，比官方文档友好很多。',
+      url: 'https://hrl.boyuai.com/chapter/2/' },
+    { cat: 'embodied', icon: 'embodied', iconBg: '🏋️', title: 'Gymnasium 官方文档', tag: 'tag-embodied', tagText: '具身智能', diff: '进阶',
+      desc: 'OpenAI Gym 的继任者，强化学习标准环境接口，CartPole 等经典环境的入门首选。',
+      url: 'https://gymnasium.farama.org/' },
+    { cat: 'embodied', icon: 'embodied', iconBg: '🦾', title: 'PyBullet 官网', tag: 'tag-embodied', tagText: '具身智能', diff: '进阶',
+      desc: '开源物理仿真引擎，机器人仿真与强化学习常用平台，Python 接口简洁。',
+      url: 'https://pybullet.org/' },
+    { cat: 'embodied', icon: 'embodied', iconBg: '📦', title: 'Bullet3 GitHub', tag: 'tag-embodied', tagText: '具身智能', diff: '进阶',
+      desc: 'PyBullet 的源码仓库，包含 Quickstart Guide 与大量机器人仿真示例。',
+      url: 'https://github.com/bulletphysics/bullet3' },
+
+    { cat: 'video', icon: 'video', iconBg: '📺', title: '李宏毅机器学习课程（2025版）', tag: 'tag-video', tagText: '视频', diff: '入门',
+      desc: 'B站公认最好的机器学习入门课，涵盖强化学习、深度学习，中文讲解生动有趣。',
+      url: 'https://www.bilibili.com/video/BV1TAtwzTE1S/' },
+    { cat: 'video', icon: 'video', iconBg: '🎯', title: '强化学习入门 6 小时实战', tag: 'tag-video', tagText: '视频', diff: '进阶',
+      desc: 'B站强化学习系统教程，从 MDP 到 Q-learning、DQN、PPO，配 OpenAI Gym 实战。',
+      url: 'https://www.bilibili.com/video/BV18nb3zzEzV/' },
+  ];
+
+  // ===== 渲染资源卡片 =====
+  const grid = document.getElementById('resourceGrid');
+  const searchInput = document.getElementById('searchInput');
+  const resultCount = document.getElementById('resultCount');
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function renderResources() {
+    let list = resources;
+    if (currentFilter !== 'all') list = list.filter(r => r.cat === currentFilter);
+    if (currentSearch) {
+      const q = currentSearch.toLowerCase();
+      list = list.filter(r =>
+        r.title.toLowerCase().includes(q) ||
+        r.desc.toLowerCase().includes(q) ||
+        r.tagText.toLowerCase().includes(q) ||
+        r.diff.toLowerCase().includes(q)
+      );
+    }
+    grid.innerHTML = '';
+    list.forEach(r => {
+      const card = document.createElement('a');
+      card.href = r.url;
+      card.target = '_blank';
+      card.className = 'res-card';
+      const diffTag = r.diff === '入门'
+        ? '<span class="res-tag tag-beginner">入门</span>'
+        : '<span class="res-tag tag-advanced">进阶</span>';
+      card.innerHTML = `
+        <div class="res-header">
+          <div class="res-icon ${r.icon}">${r.iconBg}</div>
+          <div class="res-title">${r.title}</div>
+          <div class="res-tags">
+            <span class="res-tag ${r.tag}">${r.tagText}</span>
+            ${diffTag}
+          </div>
+        </div>
+        <div class="res-desc">${r.desc}</div>
+        <div class="res-link">访问官网 <span class="res-arrow">→</span></div>
+      `;
+      grid.appendChild(card);
+    });
+    resultCount.textContent = `共 ${list.length} 个资源`;
+  }
+  renderResources();
+
+  // 筛选按钮
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderResources();
+    });
+  });
+
+  // 搜索
+  searchInput.addEventListener('input', (e) => {
+    currentSearch = e.target.value.trim();
+    renderResources();
+  });
+
+  // ===== 打卡功能 =====
+  const STORAGE_KEY = 'embodied_ai_checkin_v1';
+  const toast = document.getElementById('toast');
+
+  function loadCheckin() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch { return {}; }
+  }
+  function saveCheckin(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function updateProgress() {
+    const data = loadCheckin();
+    const done = [1,2,3,4].filter(w => data[w]).length;
+    document.getElementById('progressFill').style.width = (done / 4 * 100) + '%';
+    document.getElementById('progressText').textContent = `${done}/4 周`;
+
+    [1,2,3,4].forEach(w => {
+      const btn = document.querySelector(`[data-week-btn="${w}"]`);
+      const dot = document.querySelector(`[data-week="${w}"]`);
+      const card = document.querySelector(`[data-week-card="${w}"]`);
+      if (data[w]) {
+        btn.classList.add('done');
+        btn.innerHTML = '✅ 已完成打卡';
+        dot.classList.add('done');
+        card.classList.add('completed');
+      } else {
+        btn.classList.remove('done');
+        btn.innerHTML = '✅ 本周完成打卡';
+        dot.classList.remove('done');
+        card.classList.remove('completed');
+      }
+    });
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  document.querySelectorAll('.checkin-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const week = parseInt(btn.dataset.weekBtn);
+      const data = loadCheckin();
+      if (data[week]) {
+        delete data[week];
+        showToast('已取消第 ' + week + ' 周打卡');
+      } else {
+        data[week] = true;
+        showToast('🎉 第 ' + week + ' 周打卡成功！');
+      }
+      saveCheckin(data);
+      updateProgress();
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (confirm('确定要重置所有打卡进度吗？')) {
+      localStorage.removeItem(STORAGE_KEY);
+      updateProgress();
+      showToast('进度已重置');
+    }
+  });
+
+  updateProgress();
+
+  // ===== 每日任务功能 =====
+  const DAY_KEY = 'embodied_ai_daily_v1';
+
+  function loadDays() {
+    try {
+      return JSON.parse(localStorage.getItem(DAY_KEY)) || {};
+    } catch { return {}; }
+  }
+  function saveDays(data) {
+    localStorage.setItem(DAY_KEY, JSON.stringify(data));
+  }
+
+  function updateDailyProgress() {
+    const data = loadDays();
+    const done = Object.keys(data).filter(k => data[k]).length;
+    document.getElementById('dailyProgressText').textContent = `${done} / 28 天`;
+
+    document.querySelectorAll('.day-item').forEach(item => {
+      const cb = item.querySelector('input[type="checkbox"]');
+      if (data[cb.dataset.day]) {
+        cb.checked = true;
+        item.classList.add('done');
+      } else {
+        cb.checked = false;
+        item.classList.remove('done');
+      }
+    });
+  }
+
+  document.querySelectorAll('.day-check input').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const data = loadDays();
+      if (cb.checked) {
+        data[cb.dataset.day] = true;
+      } else {
+        delete data[cb.dataset.day];
+      }
+      saveDays(data);
+      updateDailyProgress();
+    });
+  });
+
+  // 周 tab 切换
+  document.querySelectorAll('.daily-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.daily-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const w = tab.dataset.weekTab;
+      document.querySelectorAll('.daily-panel').forEach(p => {
+        p.style.display = p.dataset.weekPanel === w ? 'flex' : 'none';
+      });
+    });
+  });
+
+  updateDailyProgress();
+
+  // ===== 全局仪表盘 =====
+  function updateDashboard() {
+    const weekData = loadCheckin();
+    const dayData = loadDays();
+    const weekDone = [1,2,3,4].filter(w => weekData[w]).length;
+    const dayDone = Object.keys(dayData).filter(k => dayData[k]).length;
+    const percent = Math.round(((weekDone + dayDone) / 32) * 100);
+
+    document.getElementById('dashWeek').textContent = `${weekDone}/4`;
+    document.getElementById('dashDay').textContent = `${dayDone}/28`;
+    document.getElementById('dashPercent').textContent = `${percent}%`;
+
+    // 连续天数：从第1天开始数，断了就停
+    let streak = 0;
+    for (let i = 1; i <= 28; i++) {
+      if (dayData[i]) streak++;
+      else break;
+    }
+    document.getElementById('dashStreak').textContent = streak;
+  }
+
+  // 每次打卡后刷新仪表盘
+  const origUpdateProgress = updateProgress;
+  updateProgress = function() {
+    origUpdateProgress();
+    updateDashboard();
+  };
+  const origUpdateDaily = updateDailyProgress;
+  updateDailyProgress = function() {
+    origUpdateDaily();
+    updateDashboard();
+  };
+  updateDashboard();
+</script>
+
+</body>
+</html>
